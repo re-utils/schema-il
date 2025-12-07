@@ -9,13 +9,11 @@ export interface IL<in out Statement, in out Expr extends Statement, in out Id e
   constTrue: Id;
   constFalse: Id;
 
-  dynConstant: (value: bigint | boolean | null | number | string | undefined) => Id;
+  constant: (value: bigint | boolean | null | number | string | undefined) => Id;
 
   equals: (left: Expr, right: Expr) => Expr;
-  greaterThan: (left: Expr, right: Expr) => Expr;
   lessThan: (left: Expr, right: Expr) => Expr;
-  lessEqualThen: (left: Expr, right: Expr) => Expr;
-  greaterEqualThen: (left: Expr, right: Expr) => Expr;
+  lessOrEqualThan: (left: Expr, right: Expr) => Expr;
 
   and: (left: Expr, right: Expr) => Expr;
   or: (left: Expr, right: Expr) => Expr;
