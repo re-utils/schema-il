@@ -1,8 +1,0 @@
-IL:
-- [baseType: number, ...params, ...constraints]
-- [0, ...constraints]
-Constraints:
-- [type: number, ...args]
-- [0, fn, ...args]: language specific constraints
-- Non-language specific constraints should be serializable
-- Must be independent
