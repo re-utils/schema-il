@@ -1,11 +1,27 @@
 import type { IL } from '../il.ts';
 
+export interface Statement extends String {
+  '~statement': never;
+}
+
+export interface Expr extends Statement {
+  '~expr': never;
+}
+
+export interface Id extends Expr {
+  '~id': never;
+}
+
+export interface Constant extends Expr {
+  '~constant': never;
+}
+
 /**
  * Expression must be wrapped correctly before passing in methods.
  *
  * Statements should be handled correctly by appending ';'.
  */
-const toString: IL<string, string, string> = {
+const toString: IL<string, string, string, string> = {
   isFloat: (expr) => `Number.isFinite(${expr})`,
   isInt: (expr) => `Number.isInteger(${expr})`,
   isString: (expr) => `(typeof ${expr}==='string')`,
@@ -27,23 +43,23 @@ const toString: IL<string, string, string> = {
   not: (expr) => `!(${expr})`,
   ternary: (condition, ifTrue, ifFalse) => `(${condition}?${ifTrue}:${ifFalse})`,
 
-  fn: (args, body) => `((${args.join()})=>${body})`,
-  callID: (fn, args) => `${fn}(${args.join()})`,
-  constructID: (fn, args) => `new ${fn}(${args.join()})`,
+  fn: (args, body) => `((${args.join()})=>{${body}})`,
+  call: (fn, args) => `${fn}(${args.join()})`,
+  construct: (fn, args) => `new ${fn}(${args.join()})`,
 
-  identifierMemberOf: (id, member) => `${id}.${member}`,
-  indexOf: (id, member) => `${id}[${member}]`,
-  memberOf: (id, member) => `${id}[${JSON.stringify(member)}]`,
+  id: (name) => name,
+  idMemberOf: (id, member) => `${id}.${member}`,
+  memberOf: (id, member) => `${id}[${member}]`,
 
   ifTrue: (condition, then, otherwise) =>
-    `if(${condition})${otherwise ? then + ';else ' + otherwise : then}`,
+    otherwise == null ? `if(${condition})${then}` : `if(${condition}){${then}}else ${otherwise}`,
   ret: (expr) => 'return ' + expr,
 
   block: (statements) => '{' + statements.join(';') + '}',
 
   declareMut: (id, value) => `let ${id}=${value}`,
   declareConst: (id, value) => `const ${id}=${value}`,
-  assign: (id, value) => `${id}=${value}`,
+  assign: (id, value) => `(${id}=${value})`,
 };
 
-export default toString;
+export default toString as any as IL<Statement, Expr, Id, Constant>;
